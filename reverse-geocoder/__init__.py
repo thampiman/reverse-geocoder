@@ -6,6 +6,7 @@ import urllib
 import zipfile
 import collections
 from scipy.spatial import cKDTree as KDTree
+import time
 
 GN_URL = 'http://download.geonames.org/export/dump/'
 GN_CITIES1000 = 'cities1000'
@@ -54,7 +55,6 @@ RG_COLUMNS = [
 RG_FILE = 'rg_cities1000.csv'
 
 def singleton(cls):
-    # Singleton pattern to avoid loading class multiple times
     instances = {}
     def getinstance():
         if cls not in instances:
@@ -69,7 +69,6 @@ class RGeocoder:
         self.tree = KDTree(coordinates)
 
     def query(self,coordinates):
-        # Find closest match to this list of coordinates
         try:
             distances,indices = self.tree.query(coordinates,k=1)
         except ValueError as e:
@@ -84,7 +83,6 @@ class RGeocoder:
             print 'Loading formatted geocoded file...'
             rows = csv.DictReader(open(local_filename,'rb'))
         else:
-            # Download files from GN_URL
             gn_cities1000_url = GN_URL + GN_CITIES1000 + '.zip'
             gn_admin1_url = GN_URL + GN_ADMIN1
             gn_admin2_url = GN_URL + GN_ADMIN2
@@ -152,22 +150,24 @@ class RGeocoder:
         return coordinates,locations
 
 def rel_path(filename):
-    # Return the path of this filename relative to the current script
     return os.path.join(os.getcwd(), os.path.dirname(__file__), filename)
 
 def get(coordinate):
-    # Search for closest known location to this coordinate
     rg = RGeocoder()
     return rg.query([coordinate])[0]
 
 def search(coordinates):
-    # Search for closest known locations to these coordinates
     rg = RGeocoder()
     return rg.query(coordinates)
 
 if __name__ == '__main__':
-    # test some coordinate lookups
-    city1 = (-37.81, 144.96)
-    city2 = (31.76, 35.21)
-    print get(city1)
-    print search([city1, city2])
+    cities = []
+    print 'Loading coordinates file...'
+    for row in csv.reader(open('../test/coordinates.csv','rb'),delimiter='\t'):
+        cities.append((row[0],row[1]))
+    
+    print 'Reverse geocoding 1 city...'
+    result1 = get(cities[0])
+
+    print 'Reverse geocoding %d cities...' % len(cities)
+    result2 = search(cities)
