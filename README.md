@@ -1,10 +1,12 @@
 Reverse Geocoder
 =================
-A Python library for offline reverse geocoding. It improves on an existing library called [reverse_geocode](https://pypi.python.org/pypi/reverse_geocode/1.0) developed by [Richard Penman](https://bitbucket.org/richardpenman/reverse_geocode). 
+A Python library for offline reverse geocoding. It improves on an existing library called [reverse_geocode](https://pypi.python.org/pypi/reverse_geocode/1.0) developed by [Richard Penman](https://bitbucket.org/richardpenman/reverse_geocode).
 
 ## Features
 1. Besides city/town and country code, this library also returns the nearest latitude and longitude and also administrative regions 1 and 2.
 2. This library also uses a parallelised implementation of K-D trees which promises an improved performance especially for large inputs.
+
+The geocoded data is based on [GeoNames](http://download.geonames.org/export/dump/).
 
 ## Installation
 ```
@@ -58,7 +60,8 @@ Mode 2 runs ~2x faster for very large inputs (10M coordinates).
 
 ## Acknowledgements
 1. Major inpsiration from Richard Penman's [reverse_geocode](https://bitbucket.org/richardpenman/reverse_geocode) library 
-2. This project also adapts a parallelised implementation of K-D Trees as detailed in this [paper](http://folk.uio.no/sturlamo/python/multiprocessing-tutorial.pdf) by Sturla Molden.
+2. This project also adapts a parallelised implementation of K-D Trees as detailed in this [paper](http://folk.uio.no/sturlamo/python/multiprocessing-tutorial.pdf) by Sturla Molden
+3. [GeoNames](http://download.geonames.org/export/dump/) for geocoded data
 
 ## License
 The MIT License (MIT)
