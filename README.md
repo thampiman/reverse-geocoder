@@ -44,7 +44,7 @@ The above code will output the following:
   	  'name': 'Bang Bua Thong'}]
 ```
 
-If you'd like to use the single-threaded K-D tree, the search command will look like follows:
+If you'd like to use the single-threaded K-D tree, set mode = 1 as follows:
 ```python
 results = rg.search(coordinates,mode=1)
 ```
@@ -54,7 +54,7 @@ The performance of modes 1 and 2 are plotted below for various input sizes.
 
 ![Performance Comparison](performance.png)
 
-Mode 2 runs almost twice as fast for very large inputs (10M coordinates).
+Mode 2 runs ~2x faster for very large inputs (10M coordinates).
 
 ## Acknowledgements
 1. Major inpsiration from Richard Penman's [reverse_geocode](https://bitbucket.org/richardpenman/reverse_geocode) library 
