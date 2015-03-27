@@ -8,6 +8,4 @@
 ehthumbs.db
 Thumbs.db
 
-# Test files #
-##############
-./test/*.*
+*.pyc
