@@ -17,6 +17,7 @@ Package can be found on [PyPI](https://pypi.python.org/pypi/reverse_geocoder/).
 
 ## Usage
 The library supports two modes:
+
 1. Mode 1: Single-threaded K-D Tree (similar to [reverse_geocode](https://pypi.python.org/pypi/reverse_geocode/1.0))
 2. Mode 2: Multi-threaded K-D Tree (default)
 
