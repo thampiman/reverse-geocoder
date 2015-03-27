@@ -8,4 +8,9 @@
 ehthumbs.db
 Thumbs.db
 
+# Project related files #
+#########################
 *.pyc
+admin1CodesASCII.txt
+admin2Codes.txt
+cities1000.zip
