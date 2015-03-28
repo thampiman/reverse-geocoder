@@ -5,7 +5,7 @@ A Python library for offline reverse geocoding. It improves on an existing libra
 v1.0 does not support Python 3. 
 
 ### About
-Ajay Thampi [@thampiman](https://twitter.com/thampiman) [opensignal.com](http://opensignal.com) [ajaythampi.com](http://ajaythampi.com) )
+Ajay Thampi [@thampiman](https://twitter.com/thampiman) [opensignal.com](http://opensignal.com) [ajaythampi.com](http://ajaythampi.com)
 
 ## Features
 1. Besides city/town and country code, this library also returns the nearest latitude and longitude and also administrative regions 1 and 2.
