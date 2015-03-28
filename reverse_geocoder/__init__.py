@@ -5,7 +5,7 @@ from __future__ import print_function
 import os
 import sys
 import csv
-csv.field_size_limit(sys.maxint)
+csv.field_size_limit(sys.maxsize)
 import urllib
 import zipfile
 import collections
