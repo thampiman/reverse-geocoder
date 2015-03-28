@@ -124,7 +124,7 @@ class RGeocoder:
             print 'Creating formatted geocoded file...'
             writer = csv.DictWriter(open(local_filename,'wb'),fieldnames=RG_COLUMNS)
             rows = []
-            for row in csv.reader(open(cities1000_filename,'rb'),delimiter='\t'):
+            for row in csv.reader(open(cities1000_filename,'rb'),delimiter='\t',quoting=csv.QUOTE_NONE):
                 lat = row[GN_COLUMNS['latitude']]
                 lon = row[GN_COLUMNS['longitude']]
                 name = row[GN_COLUMNS['asciiName']]
