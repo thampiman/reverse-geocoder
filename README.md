@@ -60,8 +60,8 @@ The performance of modes 1 and 2 are plotted below for various input sizes.
 Mode 2 runs ~2x faster for very large inputs (10M coordinates).
 
 ## Acknowledgements
-1. Major inpsiration from Richard Penman's [reverse_geocode](https://bitbucket.org/richardpenman/reverse_geocode) library 
-2. This project also adapts a parallelised implementation of K-D Trees as detailed in this [paper](http://folk.uio.no/sturlamo/python/multiprocessing-tutorial.pdf) by Sturla Molden
+1. Major inspiration from Richard Penman's [reverse_geocode](https://bitbucket.org/richardpenman/reverse_geocode) library 
+2. This project also adapts a parallelised implementation of K-D Trees as detailed in this [article](http://folk.uio.no/sturlamo/python/multiprocessing-tutorial.pdf) by [Sturla Molden](https://github.com/sturlamolden)
 3. [GeoNames](http://download.geonames.org/export/dump/) for geocoded data
 
 ## License

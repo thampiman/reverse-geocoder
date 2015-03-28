@@ -1,8 +1,6 @@
 ##
 # Author: Ajay Thampi
 # Code adapted from http://folk.uio.no/sturlamo/python/multiprocessing-tutorial.pdf
-# "Using Python, multiprocessing and NumPy/SciPy for parallel numerical computing"
-# Thanks to Sturla Molden (https://github.com/sturlamolden)
 ##
 import numpy as np
 import scipy
