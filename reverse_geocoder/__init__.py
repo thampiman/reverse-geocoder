@@ -1,6 +1,7 @@
 ##
 # Author: Ajay Thampi
 ##
+from __future__ import print_function
 import os
 import sys
 import csv
@@ -90,7 +91,7 @@ class RGeocoder:
 
     def extract(self,local_filename):
         if os.path.exists(local_filename):
-            print 'Loading formatted geocoded file...'
+            print('Loading formatted geocoded file...')
             rows = csv.DictReader(open(local_filename,'rb'))
         else:
             gn_cities1000_url = GN_URL + GN_CITIES1000 + '.zip'
@@ -101,27 +102,27 @@ class RGeocoder:
             cities1000_filename = GN_CITIES1000 + '.txt'
 
             if not os.path.exists(cities1000_zipfilename):
-                print 'Downloading files from Geoname...'
+                print('Downloading files from Geoname...')
                 urllib.urlretrieve(gn_cities1000_url,cities1000_zipfilename)
                 urllib.urlretrieve(gn_admin1_url,GN_ADMIN1)
                 urllib.urlretrieve(gn_admin2_url,GN_ADMIN2)
 
-            print 'Extracting cities1000...'
+            print('Extracting cities1000...')
             z = zipfile.ZipFile(open(cities1000_zipfilename,'rb'))
             open(cities1000_filename,'wb').write(z.read(cities1000_filename))
 
-            print 'Loading admin1 codes...'
+            print('Loading admin1 codes...')
             admin1_map = {}
             t_rows = csv.reader(open(GN_ADMIN1,'rb'),delimiter='\t')
             for row in t_rows:
                 admin1_map[row[ADMIN_COLUMNS['concatCodes']]] = row[ADMIN_COLUMNS['asciiName']]
 
-            print 'Loading admin2 codes...'
+            print('Loading admin2 codes...')
             admin2_map = {}
             for row in csv.reader(open(GN_ADMIN2,'rb'),delimiter='\t'):
                 admin2_map[row[ADMIN_COLUMNS['concatCodes']]] = row[ADMIN_COLUMNS['asciiName']]
 
-            print 'Creating formatted geocoded file...'
+            print('Creating formatted geocoded file...')
             writer = csv.DictWriter(open(local_filename,'wb'),fieldnames=RG_COLUMNS)
             rows = []
             for row in csv.reader(open(cities1000_filename,'rb'),delimiter='\t'):
@@ -149,7 +150,7 @@ class RGeocoder:
             writer.writeheader()
             writer.writerows(rows)
 
-            print 'Removing extracted cities1000 to save space...'
+            print('Removing extracted cities1000 to save space...')
             os.remove(cities1000_filename)
 
         # Load all the coordinates and locations
@@ -171,8 +172,8 @@ def search(coordinates,mode=2):
     return rg.query(coordinates)
 
 if __name__ == '__main__':
-    print 'Testing coordinates...'
+    print('Testing coordinates...')
     cities = [(-37.81, 144.96),(31.76, 35.21)]
     
-    print 'Reverse geocoding %d cities...' % len(cities)
+    print('Reverse geocoding %d cities...' % len(cities))
     results = search(cities)
