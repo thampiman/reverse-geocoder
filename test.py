@@ -1,13 +1,10 @@
 from timeit import timeit
-import csv
-import reverse_geocoder as rg
-import time
 
 if __name__ == '__main__':
     setup = "import csv;import reverse_geocoder as rg;print 'Loading coordinates...';" + \
             "cities = [(row[0],row[1]) for row in csv.reader(open('../test/coordinates_10000000.csv','rb'),delimiter='\t')];"
     num = 3
-    t = timeit(stmt="rg.search(cities,mode=2)",setup=setup,number=num)
+    t = timeit(stmt="rg.search(cities,mode=2)", setup=setup, number=num)
     print 'Running time: %.2f secs' % (t / num)
 
     '''
