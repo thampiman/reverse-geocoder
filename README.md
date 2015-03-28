@@ -6,7 +6,7 @@ A Python library for offline reverse geocoding. It improves on an existing libra
 1. Besides city/town and country code, this library also returns the nearest latitude and longitude and also administrative regions 1 and 2.
 2. This library also uses a parallelised implementation of K-D trees which promises an improved performance especially for large inputs.
 
-The geocoded data is based on [GeoNames](http://download.geonames.org/export/dump/).
+The geocoded data of cities with population > 1000 is from [GeoNames](http://download.geonames.org/export/dump/).
 
 ## Installation
 ```
