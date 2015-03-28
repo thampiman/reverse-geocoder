@@ -1,6 +1,6 @@
 ##
 # Author: Ajay Thampi
-# Code adapted from http://folk.uio.no/sturlamo/python/multiprocessing-tutorial.pdf
+# Code extended from http://folk.uio.no/sturlamo/python/multiprocessing-tutorial.pdf
 ##
 import numpy as np
 import scipy
