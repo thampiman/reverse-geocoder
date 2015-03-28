@@ -20,6 +20,8 @@ $ pip install reverse_geocoder
 
 Package can be found on [PyPI](https://pypi.python.org/pypi/reverse_geocoder/).
 
+*Update*: v1.1 released containing [Brandon](https://github.com/bdon)'s and [David](https://github.com/DavidJFelix)'s fixes
+
 ## Usage
 The library supports two modes:
 
