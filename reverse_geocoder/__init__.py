@@ -18,7 +18,6 @@ GN_CITIES1000 = 'cities1000'
 GN_ADMIN1 = 'admin1CodesASCII.txt'
 GN_ADMIN2 = 'admin2Codes.txt'
 
-# Columns from GN_URL
 GN_COLUMNS = {
     'geoNameId': 0, 
     'name': 1, 
@@ -85,11 +84,9 @@ class RGeocoder:
             else:
                 distances,indices = self.tree.pquery(coordinates,k=1)
         except ValueError as e:
-            print 'Unable to parse coordinates:', coordinates
             raise e
         else:
-            results = [self.locations[index] for index in indices]
-            return results
+            return [self.locations[index] for index in indices]
 
     def extract(self,local_filename):
         if os.path.exists(local_filename):

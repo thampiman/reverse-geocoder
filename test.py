@@ -9,7 +9,7 @@ if __name__ == '__main__':
     num = 3
     t = timeit(stmt="rg.search(cities,mode=2)",setup=setup,number=num)
     print 'Running time: %.2f secs' % (t / num)
-    
+
     '''
     print '\nLoading coordinates to compare mode 1 and mode 2...'
     cities = [(row[0],row[1]) for row in csv.reader(open('../test/coordinates_1000.csv','rb'),delimiter='\t')]
