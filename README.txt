@@ -6,6 +6,8 @@ This library improves on an existing library called reverse_geocode developed by
 2. The performance is much faster since a parallelized K-D tree is implemeneted 
 (See https://github.com/thampiman/reverse-geocoder for performance comparison)
 
+Supports Python 2 and 3.
+
 Example usage:
     >>> import reverse_geocoder as rg
     >>> coordinates = (51.5214588,-0.1729636),(13.9280531,100.3735803)

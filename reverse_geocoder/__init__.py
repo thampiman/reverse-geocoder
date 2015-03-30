@@ -5,14 +5,11 @@ from __future__ import print_function
 import os
 import sys
 import csv
-csv.field_size_limit(sys.maxint)
-import urllib
+csv.field_size_limit(sys.maxsize)
 import zipfile
-import collections
 from scipy.spatial import cKDTree as KDTree
-import time
-import cKDTree_MP as KDTree_MP
-import multiprocessing as mp
+from reverse_geocoder import cKDTree_MP as KDTree_MP
+import numpy as np
 
 GN_URL = 'http://download.geonames.org/export/dump/'
 GN_CITIES1000 = 'cities1000'
@@ -59,6 +56,9 @@ RG_COLUMNS = [
 
 RG_FILE = 'rg_cities1000.csv'
 
+A = 6378.137 # major axis in kms
+E2 = 0.00669437999014
+
 def singleton(cls):
     instances = {}
     def getinstance(mode=2):
@@ -92,7 +92,7 @@ class RGeocoder:
     def extract(self,local_filename):
         if os.path.exists(local_filename):
             print('Loading formatted geocoded file...')
-            rows = csv.DictReader(open(local_filename,'rb'))
+            rows = csv.DictReader(open(local_filename,'rt'))
         else:
             gn_cities1000_url = GN_URL + GN_CITIES1000 + '.zip'
             gn_admin1_url = GN_URL + GN_ADMIN1
@@ -103,9 +103,17 @@ class RGeocoder:
 
             if not os.path.exists(cities1000_zipfilename):
                 print('Downloading files from Geoname...')
-                urllib.urlretrieve(gn_cities1000_url,cities1000_zipfilename)
-                urllib.urlretrieve(gn_admin1_url,GN_ADMIN1)
-                urllib.urlretrieve(gn_admin2_url,GN_ADMIN2)
+                try: # Python 3
+                    import urllib.request
+                    urllib.request.urlretrieve(gn_cities1000_url,cities1000_zipfilename)
+                    urllib.request.urlretrieve(gn_admin1_url,GN_ADMIN1)
+                    urllib.request.urlretrieve(gn_admin2_url,GN_ADMIN2)
+                except ImportError: # Python 2
+                    import urllib
+                    urllib.urlretrieve(gn_cities1000_url,cities1000_zipfilename)
+                    urllib.urlretrieve(gn_admin1_url,GN_ADMIN1)
+                    urllib.urlretrieve(gn_admin2_url,GN_ADMIN2)
+
 
             print('Extracting cities1000...')
             z = zipfile.ZipFile(open(cities1000_zipfilename,'rb'))
@@ -113,19 +121,19 @@ class RGeocoder:
 
             print('Loading admin1 codes...')
             admin1_map = {}
-            t_rows = csv.reader(open(GN_ADMIN1,'rb'),delimiter='\t')
+            t_rows = csv.reader(open(GN_ADMIN1,'rt'),delimiter='\t')
             for row in t_rows:
                 admin1_map[row[ADMIN_COLUMNS['concatCodes']]] = row[ADMIN_COLUMNS['asciiName']]
 
             print('Loading admin2 codes...')
             admin2_map = {}
-            for row in csv.reader(open(GN_ADMIN2,'rb'),delimiter='\t'):
+            for row in csv.reader(open(GN_ADMIN2,'rt'),delimiter='\t'):
                 admin2_map[row[ADMIN_COLUMNS['concatCodes']]] = row[ADMIN_COLUMNS['asciiName']]
 
             print('Creating formatted geocoded file...')
-            writer = csv.DictWriter(open(local_filename,'wb'),fieldnames=RG_COLUMNS)
+            writer = csv.DictWriter(open(local_filename,'wt'),fieldnames=RG_COLUMNS)
             rows = []
-            for row in csv.reader(open(cities1000_filename,'rb'),delimiter='\t',quoting=csv.QUOTE_NONE):
+            for row in csv.reader(open(cities1000_filename,'rt'),delimiter='\t',quoting=csv.QUOTE_NONE):
                 lat = row[GN_COLUMNS['latitude']]
                 lon = row[GN_COLUMNS['longitude']]
                 name = row[GN_COLUMNS['asciiName']]
@@ -154,26 +162,46 @@ class RGeocoder:
             os.remove(cities1000_filename)
 
         # Load all the coordinates and locations
-        coordinates,locations = [],[]
+        geo_coords,locations = [],[]
         for row in rows:
-            coordinates.append((row['lat'],row['lon']))
+            geo_coords.append((row['lat'],row['lon']))
             locations.append(row)
-        return coordinates,locations
+        ecef_coords = geodetic_in_ecef(geo_coords)
+        return ecef_coords,locations
+
+def geodetic_in_ecef(geo_coords):
+    geo_coords = np.asarray(geo_coords).astype(np.float)
+    lat = geo_coords[:,0]
+    lon = geo_coords[:,1]
+
+    lat_r = np.radians(lat)
+    lon_r = np.radians(lon)
+    normal = A / (np.sqrt(1 - E2*(np.sin(lat_r) ** 2)))
+    x = normal * np.cos(lat_r) * np.cos(lon_r)
+    y = normal * np.cos(lat_r) * np.sin(lon_r)
+    z = normal * (1 - E2) * np.sin(lat)
+    return np.column_stack([x,y,z])
 
 def rel_path(filename):
     return os.path.join(os.getcwd(), os.path.dirname(__file__), filename)
 
-def get(coordinate,mode=2):
+def get(geo_coord,mode=2):
     rg = RGeocoder(mode=mode)
-    return rg.query([coordinate])[0]
+    return rg.query(geodetic_in_ecef([geo_coord]))[0]
 
-def search(coordinates,mode=2):
+def search(geo_coords,mode=2):
     rg = RGeocoder(mode=mode)
-    return rg.query(coordinates)
+    return rg.query(geodetic_in_ecef(geo_coords))
 
 if __name__ == '__main__':
+    print('Testing single coordinate...')
+    city = (37.38605,-122.08385)
+    print('Reverse geocoding 1 city...')
+    result = get(city)
+    print(result)
+
     print('Testing coordinates...')
-    cities = [(-37.81, 144.96),(31.76, 35.21)]
-    
+    cities = [(51.5214588,-0.1729636),(9.936033, 76.259952),(37.38605,-122.08385)]
     print('Reverse geocoding %d cities...' % len(cities))
     results = search(cities)
+    print(results)

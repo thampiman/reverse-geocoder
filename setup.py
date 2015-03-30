@@ -6,7 +6,7 @@ def read(filename):
     return open(os.path.join(os.path.dirname(__file__), filename)).read()
 
 setup(name='reverse_geocoder',
-	  version='1.1',
+	version='1.2',
       author='Ajay Thampi',
       author_email='ajay.thampi@gmail.com',
       url='https://github.com/thampiman/reverse-geocoder',

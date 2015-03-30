@@ -14,3 +14,5 @@ Thumbs.db
 admin1CodesASCII.txt
 admin2Codes.txt
 cities1000.zip
+.python-version
+__pycache__

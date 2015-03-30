@@ -82,7 +82,7 @@ class cKDTree_MP(cKDTree):
         for p in pool: p.start()
         for p in pool: p.join()
         if ierr.value != 0:
-            raise RuntimeError, ('%d errors in worker processes' % (ierr.value))
+            raise RuntimeError('%d errors in worker processes' % (ierr.value))
 
         return _d.copy(),_i.astype(int).copy()
 
@@ -98,7 +98,28 @@ class Scheduler:
     def __iter__(self):
         return self
 
-    def next(self):
+    def next(self): # Python 2 support
+        self._lock.acquire()
+        ndata = self._ndata.value
+        start = self._start.value
+        chunk = self._chunk 
+        if ndata:
+            if chunk > ndata:
+                s0 = start
+                s1 = start + ndata
+                self._ndata.value = 0
+            else:
+                s0 = start
+                s1 = start + chunk
+                self._ndata.value = ndata - chunk
+                self._start.value = start + chunk
+            self._lock.release()
+            return slice(s0, s1)
+        else:
+            self._lock.release()
+            raise StopIteration  
+
+    def __next__(self): # Python 3 support
         self._lock.acquire()
         ndata = self._ndata.value
         start = self._start.value
@@ -118,3 +139,4 @@ class Scheduler:
         else:
             self._lock.release()
             raise StopIteration 
+        
