@@ -14,7 +14,7 @@ Ajay Thampi | [@thampiman](https://twitter.com/thampiman) | [opensignal.com](htt
 The K-D tree is populated with cities that have a population > 1000. The source of the data is [GeoNames](http://download.geonames.org/export/dump/).
 
 ## Installation
-For first time installation use,
+For first time installation,
 ```
 $ pip install reverse_geocoder
 ```
@@ -77,7 +77,7 @@ results = rg.search(coordinates,mode=1)
 ## Performance
 The performance of modes 1 and 2 are plotted below for various input sizes.
 
-![Performance Comparison](performance.png)
+![Performance Comparison](performance.png =500x384)
 
 Mode 2 runs ~2x faster for very large inputs (10M coordinates).
 
