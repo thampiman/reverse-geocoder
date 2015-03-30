@@ -77,7 +77,7 @@ results = rg.search(coordinates,mode=1)
 ## Performance
 The performance of modes 1 and 2 are plotted below for various input sizes.
 
-![Performance Comparison](performance.png =500x384)
+![Performance Comparison](performance.png)
 
 Mode 2 runs ~2x faster for very large inputs (10M coordinates).
 
