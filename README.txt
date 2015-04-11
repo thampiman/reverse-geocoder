@@ -10,17 +10,23 @@ Supports Python 2 and 3.
 
 Example usage:
     >>> import reverse_geocoder as rg
-    >>> coordinates = (51.5214588,-0.1729636),(13.9280531,100.3735803)
+    >>> coordinates = (51.5214588,-0.1729636),(9.936033, 76.259952),(37.38605,-122.08385)
     >>> rg.search(coordinates)
-    [{'admin1': 'England',
-  	  'admin2': 'Greater London',
-  	  'cc': 'GB',
-  	  'lat': '51.51116',
-  	  'lon': '-0.18426',
-  	  'name': 'Bayswater'},
- 	 {'admin1': 'Nonthaburi',
-  	  'admin2': '',
-  	  'cc': 'TH',
-  	  'lat': '13.91783',
-  	  'lon': '100.42403',
-  	  'name': 'Bang Bua Thong'}]
+    [{'name': 'Bayswater', 
+      'cc': 'GB', 
+      'lat': '51.51116',
+      'lon': '-0.18426', 
+      'admin1': 'England', 
+      'admin2': 'Greater London'}, 
+     {'name': 'Cochin', 
+      'cc': 'IN', 
+      'lat': '9.93988',
+      'lon': '76.26022', 
+      'admin1': 'Kerala', 
+      'admin2': 'Ernakulam'},
+     {'name': 'Mountain View', 
+      'cc': 'US', 
+      'lat': '37.38605',
+      'lon': '-122.08385', 
+      'admin1': 'California', 
+      'admin2': 'Santa Clara County'}]

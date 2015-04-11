@@ -167,7 +167,7 @@ class RGeocoder:
             geo_coords.append((row['lat'],row['lon']))
             locations.append(row)
         ecef_coords = geodetic_in_ecef(geo_coords)
-        return ecef_coords,locations
+        return geo_coords,locations
 
 def geodetic_in_ecef(geo_coords):
     geo_coords = np.asarray(geo_coords).astype(np.float)
@@ -177,25 +177,35 @@ def geodetic_in_ecef(geo_coords):
     lat_r = np.radians(lat)
     lon_r = np.radians(lon)
     normal = A / (np.sqrt(1 - E2*(np.sin(lat_r) ** 2)))
+
     x = normal * np.cos(lat_r) * np.cos(lon_r)
     y = normal * np.cos(lat_r) * np.sin(lon_r)
     z = normal * (1 - E2) * np.sin(lat)
+
     return np.column_stack([x,y,z])
 
 def rel_path(filename):
     return os.path.join(os.getcwd(), os.path.dirname(__file__), filename)
 
 def get(geo_coord,mode=2):
+    if type(geo_coord) != tuple or type(geo_coord[0]) != float:
+        raise TypeError('Expecting a tuple')
+
     rg = RGeocoder(mode=mode)
-    return rg.query(geodetic_in_ecef([geo_coord]))[0]
+    return rg.query([geo_coord])[0]
 
 def search(geo_coords,mode=2):
+    if type(geo_coords) != tuple and type(geo_coords) != list:
+        raise TypeError('Expecting a tuple or a tuple/list of tuples')
+    elif type(geo_coords[0]) != tuple:
+        geo_coords = [geo_coords]
+    
     rg = RGeocoder(mode=mode)
-    return rg.query(geodetic_in_ecef(geo_coords))
+    return rg.query(geo_coords)
 
 if __name__ == '__main__':
-    print('Testing single coordinate...')
-    city = (37.38605,-122.08385)
+    print('Testing single coordinate through get...')
+    city = (37.78674,-122.39222)
     print('Reverse geocoding 1 city...')
     result = get(city)
     print(result)
