@@ -1,13 +1,8 @@
 Reverse Geocoder
 =================
-.. image:: https://pypip.in/d/reverse_geocoder/badge.png
-        :target: https://pypi.python.org/pypi/reverse_geocoder/
-
-.. image:: https://pypip.in/v/reverse_geocoder/badge.png
-        :target: https://pypi.python.org/pypi/reverse_geocoder/
-
-.. image:: https://pypip.in/license/reverse_geocoder/badge.svg
-        :target: https://pypi.python.org/pypi/reverse_geocoder/
+[![Version](https://pypip.in/v/reverse_geocoder/badge.png)](https://pypi.python.org/pypi/reverse_geocoder/)
+[![Downloads](https://pypip.in/d/reverse_geocoder/badge.png)](https://pypi.python.org/pypi/reverse_geocoder/)
+[![License](https://pypip.in/license/reverse_geocoder/badge.svg)](https://pypi.python.org/pypi/reverse_geocoder/)
 
 A Python library for offline reverse geocoding. It improves on an existing library called [reverse_geocode](https://pypi.python.org/pypi/reverse_geocode/1.0) developed by [Richard Penman](https://bitbucket.org/richardpenman/reverse_geocode).
 
