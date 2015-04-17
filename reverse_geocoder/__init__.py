@@ -69,12 +69,10 @@ def singleton(cls):
 
 @singleton
 class RGeocoder:
-    verbose = True
-
     def __init__(self,mode=2,verbose=True):
-        coordinates, self.locations = self.extract(rel_path(RG_FILE))
         self.mode = mode
         self.verbose = verbose
+        coordinates, self.locations = self.extract(rel_path(RG_FILE))
         if mode == 1: # Single-process
             self.tree = KDTree(coordinates)
         else: # Multi-process
