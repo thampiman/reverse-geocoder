@@ -61,17 +61,20 @@ E2 = 0.00669437999014
 
 def singleton(cls):
     instances = {}
-    def getinstance(mode=2):
+    def getinstance(mode=2,verbose=True):
         if cls not in instances:
-            instances[cls] = cls(mode=mode)
+            instances[cls] = cls(mode=mode,verbose=verbose)
         return instances[cls]
     return getinstance
 
 @singleton
 class RGeocoder:
-    def __init__(self,mode=2):
+    verbose = True
+
+    def __init__(self,mode=2,verbose=True):
         coordinates, self.locations = self.extract(rel_path(RG_FILE))
         self.mode = mode
+        self.verbose = verbose
         if mode == 1: # Single-process
             self.tree = KDTree(coordinates)
         else: # Multi-process
@@ -91,7 +94,8 @@ class RGeocoder:
 
     def extract(self,local_filename):
         if os.path.exists(local_filename):
-            print('Loading formatted geocoded file...')
+            if self.verbose:
+                print('Loading formatted geocoded file...')
             rows = csv.DictReader(open(local_filename,'rt'))
         else:
             gn_cities1000_url = GN_URL + GN_CITIES1000 + '.zip'
@@ -102,7 +106,8 @@ class RGeocoder:
             cities1000_filename = GN_CITIES1000 + '.txt'
 
             if not os.path.exists(cities1000_zipfilename):
-                print('Downloading files from Geoname...')
+                if self.verbose:
+                    print('Downloading files from Geoname...')
                 try: # Python 3
                     import urllib.request
                     urllib.request.urlretrieve(gn_cities1000_url,cities1000_zipfilename)
@@ -115,22 +120,26 @@ class RGeocoder:
                     urllib.urlretrieve(gn_admin2_url,GN_ADMIN2)
 
 
-            print('Extracting cities1000...')
+            if self.verbose:
+                print('Extracting cities1000...')
             z = zipfile.ZipFile(open(cities1000_zipfilename,'rb'))
             open(cities1000_filename,'wb').write(z.read(cities1000_filename))
 
-            print('Loading admin1 codes...')
+            if self.verbose:
+                print('Loading admin1 codes...')
             admin1_map = {}
             t_rows = csv.reader(open(GN_ADMIN1,'rt'),delimiter='\t')
             for row in t_rows:
                 admin1_map[row[ADMIN_COLUMNS['concatCodes']]] = row[ADMIN_COLUMNS['asciiName']]
 
-            print('Loading admin2 codes...')
+            if self.verbose:
+                print('Loading admin2 codes...')
             admin2_map = {}
             for row in csv.reader(open(GN_ADMIN2,'rt'),delimiter='\t'):
                 admin2_map[row[ADMIN_COLUMNS['concatCodes']]] = row[ADMIN_COLUMNS['asciiName']]
 
-            print('Creating formatted geocoded file...')
+            if self.verbose:
+                print('Creating formatted geocoded file...')
             writer = csv.DictWriter(open(local_filename,'wt'),fieldnames=RG_COLUMNS)
             rows = []
             for row in csv.reader(open(cities1000_filename,'rt'),delimiter='\t',quoting=csv.QUOTE_NONE):
@@ -158,7 +167,8 @@ class RGeocoder:
             writer.writeheader()
             writer.writerows(rows)
 
-            print('Removing extracted cities1000 to save space...')
+            if self.verbose:
+                print('Removing extracted cities1000 to save space...')
             os.remove(cities1000_filename)
 
         # Load all the coordinates and locations
@@ -187,20 +197,20 @@ def geodetic_in_ecef(geo_coords):
 def rel_path(filename):
     return os.path.join(os.getcwd(), os.path.dirname(__file__), filename)
 
-def get(geo_coord,mode=2):
+def get(geo_coord,mode=2,verbose=True):
     if type(geo_coord) != tuple or type(geo_coord[0]) != float:
         raise TypeError('Expecting a tuple')
 
-    rg = RGeocoder(mode=mode)
+    rg = RGeocoder(mode=mode,verbose=verbose)
     return rg.query([geo_coord])[0]
 
-def search(geo_coords,mode=2):
+def search(geo_coords,mode=2,verbose=True):
     if type(geo_coords) != tuple and type(geo_coords) != list:
         raise TypeError('Expecting a tuple or a tuple/list of tuples')
     elif type(geo_coords[0]) != tuple:
         geo_coords = [geo_coords]
     
-    rg = RGeocoder(mode=mode)
+    rg = RGeocoder(mode=mode,verbose=verbose)
     return rg.query(geo_coords)
 
 if __name__ == '__main__':
