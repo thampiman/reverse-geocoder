@@ -2,7 +2,7 @@ Reverse Geocoder
 =================
 A Python library for offline reverse geocoding. It improves on an existing library called [reverse_geocode](https://pypi.python.org/pypi/reverse_geocode/1.0) developed by [Richard Penman](https://bitbucket.org/richardpenman/reverse_geocode).
 
-*UPDATE (11-Apr-15)*: v1.4 released! See release notes below.
+*UPDATE (08-Jul-16)*: v1.4 released! See release notes below.
 
 ### About
 Ajay Thampi | [@thampiman](https://twitter.com/thampiman) | [opensignal.com](http://opensignal.com) | [ajaythampi.com](http://ajaythampi.com)
