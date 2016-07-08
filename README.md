@@ -1,12 +1,8 @@
 Reverse Geocoder
 =================
-[![Version](https://pypip.in/v/reverse_geocoder/badge.png)](https://pypi.python.org/pypi/reverse_geocoder/)
-[![Downloads](https://pypip.in/d/reverse_geocoder/badge.png)](https://pypi.python.org/pypi/reverse_geocoder/)
-[![License](https://pypip.in/license/reverse_geocoder/badge.svg)](https://pypi.python.org/pypi/reverse_geocoder/)
-
 A Python library for offline reverse geocoding. It improves on an existing library called [reverse_geocode](https://pypi.python.org/pypi/reverse_geocode/1.0) developed by [Richard Penman](https://bitbucket.org/richardpenman/reverse_geocode).
 
-*UPDATE (11-Apr-15)*: v1.3 released! See release notes below.
+*UPDATE (11-Apr-15)*: v1.4 released! See release notes below.
 
 ### About
 Ajay Thampi | [@thampiman](https://twitter.com/thampiman) | [opensignal.com](http://opensignal.com) | [ajaythampi.com](http://ajaythampi.com)
@@ -39,6 +35,7 @@ Package can be found on [PyPI](https://pypi.python.org/pypi/reverse_geocoder/).
 2. v1.1 (28-Mar-15) - Fix for issue [#1](https://github.com/thampiman/reverse-geocoder/issues/1) by [Brandon](https://github.com/bdon)
 3. v1.2 (30-Mar-15) - Support for Python 3, conversion of [Geodetic](http://en.wikipedia.org/wiki/Geodetic_datum) coordinates to [ECEF](http://en.wikipedia.org/wiki/ECEF) for use in K-D trees to find nearest neighbour using the Euclidean distance function. This release fixes issues [#2](https://github.com/thampiman/reverse-geocoder/issues/2) and [#8](https://github.com/thampiman/reverse-geocoder/issues/8). Special thanks to [David](https://github.com/DavidJFelix) for his help in partly fixing [#2](https://github.com/thampiman/reverse-geocoder/issues/2).
 4. v1.3 (11-Apr-15) - This release fixes issues [#9](https://github.com/thampiman/reverse-geocoder/issues/9), [#10](https://github.com/thampiman/reverse-geocoder/issues/10), [#11](https://github.com/thampiman/reverse-geocoder/issues/11) and [#12](https://github.com/thampiman/reverse-geocoder/issues/12). License has been changed from MIT to LGPL (see [#12](https://github.com/thampiman/reverse-geocoder/issues/12)).
+5. v1.4 (08-Jul-16) - Included numpy and scipy as dependencies in setup.  
 
 ## Usage
 The library supports two modes:
