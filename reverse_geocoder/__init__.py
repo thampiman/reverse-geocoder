@@ -63,7 +63,7 @@ def singleton(cls):
     instances = {}
     def getinstance(**kwargs):
         key = tuple([ cls ] + kwargs.values())
-        if cls not in instances:
+        if key not in instances:
             instances[key] = cls(**kwargs)
         return instances[key]
     return getinstance
