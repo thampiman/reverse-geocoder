@@ -61,18 +61,21 @@ E2 = 0.00669437999014
 
 def singleton(cls):
     instances = {}
-    def getinstance(mode=2,verbose=True):
+    def getinstance(**kwargs):
+        key = tuple([ cls ] + kwargs.values())
         if cls not in instances:
-            instances[cls] = cls(mode=mode,verbose=verbose)
-        return instances[cls]
+            instances[key] = cls(**kwargs)
+        return instances[key]
     return getinstance
 
 @singleton
-class RGeocoder:
-    def __init__(self,mode=2,verbose=True):
+class RGeocoder (object):
+    def __init__(self,mode=2,path=RG_FILE,verbose=True):
         self.mode = mode
         self.verbose = verbose
-        coordinates, self.locations = self.extract(rel_path(RG_FILE))
+        if not os.path.exists(path):
+            path = rel_path(path)
+        coordinates, self.locations = self.extract(path)
         if mode == 1: # Single-process
             self.tree = KDTree(coordinates)
         else: # Multi-process
