@@ -98,7 +98,7 @@ class RGeocoder (object):
             if self.verbose:
                 print('Loading formatted geocoded file...')
             rows = csv.DictReader(open(local_filename,'rt'))
-        else:
+        elif local_filename.endswith(RG_FILE):
             gn_cities1000_url = GN_URL + GN_CITIES1000 + '.zip'
             gn_admin1_url = GN_URL + GN_ADMIN1
             gn_admin2_url = GN_URL + GN_ADMIN2
@@ -171,6 +171,8 @@ class RGeocoder (object):
             if self.verbose:
                 print('Removing extracted cities1000 to save space...')
             os.remove(cities1000_filename)
+        else:
+            raise Exception, "Geocoded file not found"
 
         # Load all the coordinates and locations
         geo_coords,locations = [],[]
