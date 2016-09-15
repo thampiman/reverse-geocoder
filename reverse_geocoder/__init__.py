@@ -5,7 +5,12 @@ from __future__ import print_function
 import os
 import sys
 import csv
-csv.field_size_limit(sys.maxsize)
+if sys.platform == 'win32':
+    # Windows C long is 32 bits, and the Python int is too large to fit inside.
+    # Use the limit appropriate for a 32-bit integer as the max file size
+    csv.field_size_limit(2**31-1)
+else:
+    csv.field_size_limit(sys.maxsize)
 import zipfile
 from scipy.spatial import cKDTree as KDTree
 from reverse_geocoder import cKDTree_MP as KDTree_MP
@@ -17,24 +22,24 @@ GN_ADMIN1 = 'admin1CodesASCII.txt'
 GN_ADMIN2 = 'admin2Codes.txt'
 
 GN_COLUMNS = {
-    'geoNameId': 0, 
-    'name': 1, 
+    'geoNameId': 0,
+    'name': 1,
     'asciiName': 2,
-    'alternateNames': 3, 
-    'latitude': 4, 
-    'longitude': 5, 
+    'alternateNames': 3,
+    'latitude': 4,
+    'longitude': 5,
     'featureClass': 6,
     'featureCode': 7,
     'countryCode': 8,
-    'cc2': 9, 
+    'cc2': 9,
     'admin1Code': 10,
-    'admin2Code': 11, 
-    'admin3Code': 12, 
-    'admin4Code': 13, 
-    'population': 14, 
-    'elevation': 15, 
-    'dem': 16, 
-    'timezone': 17, 
+    'admin2Code': 11,
+    'admin3Code': 12,
+    'admin4Code': 13,
+    'population': 14,
+    'elevation': 15,
+    'dem': 16,
+    'timezone': 17,
     'modificationDate': 18
 }
 
@@ -42,7 +47,7 @@ ADMIN_COLUMNS = {
     'concatCodes': 0,
     'name': 1,
     'asciiName': 2,
-    'geoNameId': 3   
+    'geoNameId': 3
 }
 
 RG_COLUMNS = [
@@ -77,7 +82,7 @@ class RGeocoder:
             self.tree = KDTree(coordinates)
         else: # Multi-process
             self.tree = KDTree_MP.cKDTree_MP(coordinates)
-        
+
 
     def query(self,coordinates):
         try:
@@ -207,7 +212,7 @@ def search(geo_coords,mode=2,verbose=True):
         raise TypeError('Expecting a tuple or a tuple/list of tuples')
     elif type(geo_coords[0]) != tuple:
         geo_coords = [geo_coords]
-    
+
     rg = RGeocoder(mode=mode,verbose=verbose)
     return rg.query(geo_coords)
 
