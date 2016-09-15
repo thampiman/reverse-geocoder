@@ -103,7 +103,8 @@ class cKDTree_MP(cKDTree):
 
 class Scheduler:
     """
-    Scheduler that returns chunks of data to be queries on the K-D Tree
+    Scheduler that returns chunks of data to be queries on the K-D Tree.
+    The number of chunks is determined by the number of processes.
     """
     def __init__(self, ndata, nprocs):
         self._ndata = mp.RawValue(ctypes.c_int, ndata)
