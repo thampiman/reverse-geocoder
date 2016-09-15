@@ -2,7 +2,7 @@ Reverse Geocoder
 =================
 A Python library for offline reverse geocoding. It improves on an existing library called [reverse_geocode](https://pypi.python.org/pypi/reverse_geocode/1.0) developed by [Richard Penman](https://bitbucket.org/richardpenman/reverse_geocode).
 
-*UPDATE (15-Sep-16)*: v1.5 released! See release notes below.
+*UPDATE (15-Sep-16)*: v1.5.1 released! See release notes below.
 
 ### About
 Ajay Thampi | [@thampiman](https://twitter.com/thampiman) | [opensignal.com](http://opensignal.com) | [ajaythampi.com](http://ajaythampi.com)
@@ -46,6 +46,7 @@ Package can be found on [PyPI](https://pypi.python.org/pypi/reverse_geocoder/).
 4. v1.3 (11-Apr-15) - This release fixes issues [#9](https://github.com/thampiman/reverse-geocoder/issues/9), [#10](https://github.com/thampiman/reverse-geocoder/issues/10), [#11](https://github.com/thampiman/reverse-geocoder/issues/11) and [#12](https://github.com/thampiman/reverse-geocoder/issues/12). License has been changed from MIT to LGPL (see [#12](https://github.com/thampiman/reverse-geocoder/issues/12)).
 5. v1.4 (08-Jul-16) - Included numpy and scipy as dependencies in setup.  
 6. v1.5 (15-Sep-16) - Support for custom data source and fixes for issues [#16](https://github.com/thampiman/reverse-geocoder/issues/16) and [#24](https://github.com/thampiman/reverse-geocoder/issues/24). Hat tip to [Jason](https://github.com/swails) and [Gregoire](https://github.com/geekingfrog).
+7. v1.5.1 (15-Sep-16) - Fix for [#26](https://github.com/thampiman/reverse-geocoder/issues/26).
 
 ## Usage
 The library supports two modes:

@@ -17,7 +17,7 @@ class build_ext(_build_ext):
       self.include_dirs.append(numpy.get_include())
 
 setup(name='reverse_geocoder',
-      version='1.5',
+      version='1.5.1',
       author='Ajay Thampi',
       author_email='ajay.thampi@gmail.com',
       url='https://github.com/thampiman/reverse-geocoder',
