@@ -80,12 +80,12 @@ def singleton(cls):
     Function to get single instance of the RGeocoder class
     """
     instances = {}
-    def getinstance(mode=2, verbose=True, stream=None):
+    def getinstance(**kwargs):
         """
         Creates a new RGeocoder instance if not created already
         """
         if cls not in instances:
-            instances[cls] = cls(mode=mode, verbose=verbose, stream=stream)
+            instances[cls] = cls(**kwargs)
         return instances[cls]
     return getinstance
 
