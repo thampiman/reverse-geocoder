@@ -3,10 +3,10 @@ Reverse Geocoder
 Reverse Geocoder takes a latitude / longitude coordinate and returns the nearest town/city.
 This library improves on an existing library called reverse_geocode developed by Richard Penman in the following ways:
 1. Besides city and country, this library also returns the administrative 1 & 2 regions, latitude and longitude
-2. The performance is much faster since a parallelized K-D tree is implemeneted 
+2. The performance is much faster since a parallelized K-D tree is implemented 
 (See https://github.com/thampiman/reverse-geocoder for performance comparison)
 
-Supports Python 2 and 3.
+Supports Python 2 and 3. You can also load a custom data source. Fore more help, see https://github.com/thampiman/reverse-geocoder.
 
 Example usage:
     >>> import reverse_geocoder as rg

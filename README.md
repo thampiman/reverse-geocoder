@@ -2,7 +2,7 @@ Reverse Geocoder
 =================
 A Python library for offline reverse geocoding. It improves on an existing library called [reverse_geocode](https://pypi.python.org/pypi/reverse_geocode/1.0) developed by [Richard Penman](https://bitbucket.org/richardpenman/reverse_geocode).
 
-*UPDATE (08-Jul-16)*: v1.4 released! See release notes below.
+*UPDATE (15-Sep-16)*: v1.5 released! See release notes below.
 
 ### About
 Ajay Thampi | [@thampiman](https://twitter.com/thampiman) | [opensignal.com](http://opensignal.com) | [ajaythampi.com](http://ajaythampi.com)
@@ -11,7 +11,16 @@ Ajay Thampi | [@thampiman](https://twitter.com/thampiman) | [opensignal.com](htt
 1. Besides city/town and country code, this library also returns the nearest latitude and longitude and also administrative regions 1 and 2.
 2. This library also uses a parallelised implementation of K-D trees which promises an improved performance especially for large inputs.
 
-The K-D tree is populated with cities that have a population > 1000. The source of the data is [GeoNames](http://download.geonames.org/export/dump/).
+By default, the K-D tree is populated with cities that have a population > 1000. The source of the data is [GeoNames](http://download.geonames.org/export/dump/). You can also load a custom data source so long as it is a comma-separated file with header (like [rg_cities1000.csv](https://github.com/thampiman/reverse-geocoder/blob/master/reverse_geocoder/rg_cities1000.csv)), containing the following columns:
+
+- `lat`: Latitude
+- `lon`: Longitude
+- `name`: Name of place
+- `admin1`: Admin 1 region
+- `admin2`: Admin 2 region
+- `cc`: ISO 3166-1 alpha-2 country code
+
+For usage instructions, see below.
 
 ## Installation
 For first time installation,
@@ -36,6 +45,7 @@ Package can be found on [PyPI](https://pypi.python.org/pypi/reverse_geocoder/).
 3. v1.2 (30-Mar-15) - Support for Python 3, conversion of [Geodetic](http://en.wikipedia.org/wiki/Geodetic_datum) coordinates to [ECEF](http://en.wikipedia.org/wiki/ECEF) for use in K-D trees to find nearest neighbour using the Euclidean distance function. This release fixes issues [#2](https://github.com/thampiman/reverse-geocoder/issues/2) and [#8](https://github.com/thampiman/reverse-geocoder/issues/8). Special thanks to [David](https://github.com/DavidJFelix) for his help in partly fixing [#2](https://github.com/thampiman/reverse-geocoder/issues/2).
 4. v1.3 (11-Apr-15) - This release fixes issues [#9](https://github.com/thampiman/reverse-geocoder/issues/9), [#10](https://github.com/thampiman/reverse-geocoder/issues/10), [#11](https://github.com/thampiman/reverse-geocoder/issues/11) and [#12](https://github.com/thampiman/reverse-geocoder/issues/12). License has been changed from MIT to LGPL (see [#12](https://github.com/thampiman/reverse-geocoder/issues/12)).
 5. v1.4 (08-Jul-16) - Included numpy and scipy as dependencies in setup.  
+6. v1.5 (15-Sep-16) - Support for custom data source and fixes for issues [#16](https://github.com/thampiman/reverse-geocoder/issues/16) and [#24](https://github.com/thampiman/reverse-geocoder/issues/24). Hat tip to [Jason](https://github.com/swails) and [Gregoire](https://github.com/geekingfrog).
 
 ## Usage
 The library supports two modes:
@@ -79,6 +89,18 @@ If you'd like to use the single-threaded K-D tree, set mode = 1 as follows:
 ```python
 results = rg.search(coordinates,mode=1)
 ```
+
+To use a custom data source for geocoding, you can load the file in-memory and pass it to the library as follows:
+```python
+import io
+import reverse_geocoder as rg
+
+geo = rg.RGeocoder(mode=2, verbose=True, stream=io.StringIO(open('custom_source.csv', encoding='utf-8').read()))
+coordinates = (51.5214588,-0.1729636),(9.936033, 76.259952),(37.38605,-122.08385)
+results = geo.query(coordinates)
+```
+
+As mentioned above, the custom data source must be comma-separated with a header as [rg_cities1000.csv](https://github.com/thampiman/reverse-geocoder/blob/master/reverse_geocoder/rg_cities1000.csv).
 
 ## Performance
 The performance of modes 1 and 2 are plotted below for various input sizes.

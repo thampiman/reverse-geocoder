@@ -7,6 +7,7 @@ from setuptools.command.build_ext import build_ext as _build_ext
 def read(filename):
     return open(os.path.join(os.path.dirname(__file__), filename)).read()
 
+# Handling scipy dependency. See: http://stackoverflow.com/a/38276716
 class build_ext(_build_ext):
     def finalize_options(self):
       _build_ext.finalize_options(self)
