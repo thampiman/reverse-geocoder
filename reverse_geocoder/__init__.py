@@ -61,24 +61,27 @@ E2 = 0.00669437999014
 
 def singleton(cls):
     instances = {}
-    def getinstance(mode=2,verbose=True):
+    def getinstance(mode=2,verbose=True,stream=None):
         if cls not in instances:
-            instances[cls] = cls(mode=mode,verbose=verbose)
+            instances[cls] = cls(mode=mode,verbose=verbose,stream=stream)
         return instances[cls]
     return getinstance
 
 @singleton
 class RGeocoder:
-    def __init__(self,mode=2,verbose=True):
+    def __init__(self,mode=2,verbose=True,stream=None):
         self.mode = mode
         self.verbose = verbose
-        coordinates, self.locations = self.extract(rel_path(RG_FILE))
+        if stream:
+            coordinates, self.locations = self.load(stream)
+        else:
+            coordinates, self.locations = self.extract(rel_path(RG_FILE))
+
         if mode == 1: # Single-process
             self.tree = KDTree(coordinates)
         else: # Multi-process
             self.tree = KDTree_MP.cKDTree_MP(coordinates)
         
-
     def query(self,coordinates):
         try:
             if self.mode == 1:
@@ -89,6 +92,23 @@ class RGeocoder:
             raise e
         else:
             return [self.locations[index] for index in indices]
+
+    def load(self, stream):
+        stream_reader = csv.DictReader(stream, delimiter=',')
+        header = stream_reader.fieldnames
+
+        if header != RG_COLUMNS:
+            raise csv.Error('Input must be a comma-separated file with header containing ' + \
+                'the following columns - %s. For more help, visit: ' % (','.join(RG_COLUMNS)) + \
+                'https://github.com/thampiman/reverse-geocoder' )
+
+        # Load all the coordinates and locations
+        geo_coords,locations = [],[]
+        for row in stream_reader:
+            geo_coords.append((row['lat'],row['lon']))
+            locations.append(row)
+
+        return geo_coords,locations
 
     def extract(self,local_filename):
         if os.path.exists(local_filename):
