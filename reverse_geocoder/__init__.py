@@ -66,18 +66,21 @@ E2 = 0.00669437999014
 
 def singleton(cls):
     instances = {}
-    def getinstance(mode=2,verbose=True):
-        if cls not in instances:
-            instances[cls] = cls(mode=mode,verbose=verbose)
-        return instances[cls]
+    def getinstance(**kwargs):
+        key = tuple([ cls ] + kwargs.values())
+        if key not in instances:
+            instances[key] = cls(**kwargs)
+        return instances[key]
     return getinstance
 
 @singleton
-class RGeocoder:
-    def __init__(self,mode=2,verbose=True):
+class RGeocoder (object):
+    def __init__(self,mode=2,path=RG_FILE,verbose=True):
         self.mode = mode
         self.verbose = verbose
-        coordinates, self.locations = self.extract(rel_path(RG_FILE))
+        if not os.path.exists(path):
+            path = rel_path(path)
+        coordinates, self.locations = self.extract(path)
         if mode == 1: # Single-process
             self.tree = KDTree(coordinates)
         else: # Multi-process
@@ -100,7 +103,7 @@ class RGeocoder:
             if self.verbose:
                 print('Loading formatted geocoded file...')
             rows = csv.DictReader(open(local_filename,'rt'))
-        else:
+        elif local_filename.endswith(RG_FILE):
             gn_cities1000_url = GN_URL + GN_CITIES1000 + '.zip'
             gn_admin1_url = GN_URL + GN_ADMIN1
             gn_admin2_url = GN_URL + GN_ADMIN2
@@ -173,6 +176,8 @@ class RGeocoder:
             if self.verbose:
                 print('Removing extracted cities1000 to save space...')
             os.remove(cities1000_filename)
+        else:
+            raise Exception, "Geocoded file not found"
 
         # Load all the coordinates and locations
         geo_coords,locations = [],[]
