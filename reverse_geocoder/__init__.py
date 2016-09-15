@@ -121,15 +121,11 @@ class RGeocoder(object):
         Args:
         coordinates (list): List of tuple coordinates, i.e. [(latitude, longitude)]
         """
-        try:
-            if self.mode == 1:
-                _, indices = self.tree.query(coordinates, k=1)
-            else:
-                _, indices = self.tree.pquery(coordinates, k=1)
-        except ValueError as _e:
-            raise _e
+        if self.mode == 1:
+            _, indices = self.tree.query(coordinates, k=1)
         else:
-            return [self.locations[index] for index in indices]
+            _, indices = self.tree.pquery(coordinates, k=1)
+        return [self.locations[index] for index in indices]
 
     def load(self, stream):
         """
