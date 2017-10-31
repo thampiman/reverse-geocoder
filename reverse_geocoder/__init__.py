@@ -9,7 +9,6 @@ __author__ = 'Ajay Thampi'
 import os
 import sys
 import csv
-import pandas as pd
 from collections import OrderedDict
 if sys.platform == 'win32':
     # Windows C long is 32 bits, and the Python int is too large to fit inside.
@@ -109,7 +108,7 @@ class RGeocoder(object):
         self.verbose = verbose
         
         if stream:
-            if isinstance(stream, pd.DataFrame):
+            if isinstance(stream, dict):
                 coordinates, self.locations = self.load_df(stream)
             else:
                 coordinates, self.locations = self.load(stream)
@@ -157,15 +156,30 @@ class RGeocoder(object):
 
         return geo_coords, locations
     
-    def load_df(self, df):
-        '''Instead of a stream, uses a dataframe as input'''
-        if set(df.columns) != set(RG_COLUMNS):
-            raise('df must have columns{}'.format(RG_COLUMNS))
-        elif list(df.columns) != RG_COLUMNS:
-            df = df[RG_COLUMNS]
-            
-        geo_coords = list(df[['lat', 'lon']].itertuples(index=False, name=None))
-        locations  = [OrderedDict(dict) for dict in df.to_dict('records')]
+    def load_obj(self, d):
+        assert set(d.keys()) == set(['geo_coords', 'locations']), \
+            "input dictionary must have fields geo_coords and locations"
+
+        assert isinstance(d['geo_coords'], list),\
+            "d['geo_coords'] must be a list of tuples"
+
+        assert isinstance(d['locations'], list), \
+            "d['locations'] must be a list of ordered dictionaries"
+
+        for od in d['locations']:
+            assert isinstance(od, OrderedDict), \
+                "d['locations'] must be a list of ordered dictionaries" 
+            assert set(od.keys()) == set(RG_COLUMNS), \
+                "d['locations'] must be a list of ordered dictionaries with keys {}".format(RG_COLUMNS)
+
+        for od in d['geo_coords']:
+            assert isinstance(od, tuple), \
+                "d['locations'] must be a list of tuples"
+            assert len(od) == 2, \
+                "d['locations'] must be a list of tuples with latitude and longitude"
+    
+        geo_coords = d['geo_coords']
+        locations  = d['locations']
         
         return geo_coords, locations
         
