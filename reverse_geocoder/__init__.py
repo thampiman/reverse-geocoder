@@ -9,6 +9,8 @@ __author__ = 'Ajay Thampi'
 import os
 import sys
 import csv
+import pandas as pd
+from collections import OrderedDict
 if sys.platform == 'win32':
     # Windows C long is 32 bits, and the Python int is too large to fit inside.
     # Use the limit appropriate for a 32-bit integer as the max file size
@@ -105,8 +107,12 @@ class RGeocoder(object):
         """
         self.mode = mode
         self.verbose = verbose
+        
         if stream:
-            coordinates, self.locations = self.load(stream)
+            if isinstance(stream, pd.DataFrame):
+                coordinates, self.locations = self.load_df(stream)
+            else:
+                coordinates, self.locations = self.load(stream)
         else:
             coordinates, self.locations = self.extract(rel_path(RG_FILE))
 
@@ -150,6 +156,19 @@ class RGeocoder(object):
             locations.append(row)
 
         return geo_coords, locations
+    
+    def load_df(self, df):
+        '''Instead of a stream, uses a dataframe as input'''
+        if set(df.columns) != set(RG_COLUMNS):
+            raise('df must have columns{}'.format(RG_COLUMNS))
+        elif list(df.columns) != RG_COLUMNS:
+            df = df[RG_COLUMNS]
+            
+        geo_coords = list(df[['lat', 'lon']].itertuples(index=False, name=None))
+        locations  = [OrderedDict(dict) for dict in df.to_dict('records')]
+        
+        return geo_coords, locations
+        
 
     def extract(self, local_filename):
         """
