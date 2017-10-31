@@ -9,6 +9,7 @@ __author__ = 'Ajay Thampi'
 import os
 import sys
 import csv
+from collections import OrderedDict
 if sys.platform == 'win32':
     # Windows C long is 32 bits, and the Python int is too large to fit inside.
     # Use the limit appropriate for a 32-bit integer as the max file size
@@ -105,8 +106,12 @@ class RGeocoder(object):
         """
         self.mode = mode
         self.verbose = verbose
+        
         if stream:
-            coordinates, self.locations = self.load(stream)
+            if isinstance(stream, dict):
+                coordinates, self.locations = self.load_df(stream)
+            else:
+                coordinates, self.locations = self.load(stream)
         else:
             coordinates, self.locations = self.extract(rel_path(RG_FILE))
 
@@ -150,6 +155,34 @@ class RGeocoder(object):
             locations.append(row)
 
         return geo_coords, locations
+    
+    def load_obj(self, d):
+        assert set(d.keys()) == set(['geo_coords', 'locations']), \
+            "input dictionary must have fields geo_coords and locations"
+
+        assert isinstance(d['geo_coords'], list),\
+            "d['geo_coords'] must be a list of tuples"
+
+        assert isinstance(d['locations'], list), \
+            "d['locations'] must be a list of ordered dictionaries"
+
+        for od in d['locations']:
+            assert isinstance(od, OrderedDict), \
+                "d['locations'] must be a list of ordered dictionaries" 
+            assert set(od.keys()) == set(RG_COLUMNS), \
+                "d['locations'] must be a list of ordered dictionaries with keys {}".format(RG_COLUMNS)
+
+        for od in d['geo_coords']:
+            assert isinstance(od, tuple), \
+                "d['locations'] must be a list of tuples"
+            assert len(od) == 2, \
+                "d['locations'] must be a list of tuples with latitude and longitude"
+    
+        geo_coords = d['geo_coords']
+        locations  = d['locations']
+        
+        return geo_coords, locations
+        
 
     def extract(self, local_filename):
         """
