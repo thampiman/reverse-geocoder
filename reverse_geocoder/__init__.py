@@ -94,7 +94,7 @@ class RGeocoder(object):
     """
     The main reverse geocoder class
     """
-    def __init__(self, mode=2, verbose=True, stream=None):
+    def __init__(self, mode=2, verbose=False, stream=None):
         """ Class Instantiation
         Args:
         mode (int): Library supports the following two modes:
@@ -160,7 +160,7 @@ class RGeocoder(object):
         """
         if os.path.exists(local_filename):
             if self.verbose:
-                print('Loading formatted geocoded file...')
+                print('Loading formatted geocoded file...', file=sys.stderr)
             rows = csv.DictReader(open(local_filename, 'rt'))
         else:
             gn_cities1000_url = GN_URL + GN_CITIES1000 + '.zip'
@@ -172,7 +172,7 @@ class RGeocoder(object):
 
             if not os.path.exists(cities1000_zipfilename):
                 if self.verbose:
-                    print('Downloading files from Geoname...')
+                    print('Downloading files from Geoname...', file=sys.stderr)
                 try: # Python 3
                     import urllib.request
                     urllib.request.urlretrieve(gn_cities1000_url, cities1000_zipfilename)
@@ -186,25 +186,25 @@ class RGeocoder(object):
 
 
             if self.verbose:
-                print('Extracting cities1000...')
+                print('Extracting cities1000...'file=sys.stderr)
             _z = zipfile.ZipFile(open(cities1000_zipfilename, 'rb'))
             open(cities1000_filename, 'wb').write(_z.read(cities1000_filename))
 
             if self.verbose:
-                print('Loading admin1 codes...')
+                print('Loading admin1 codes...', file=sys.stderr)
             admin1_map = {}
             t_rows = csv.reader(open(GN_ADMIN1, 'rt'), delimiter='\t')
             for row in t_rows:
                 admin1_map[row[ADMIN_COLUMNS['concatCodes']]] = row[ADMIN_COLUMNS['asciiName']]
 
             if self.verbose:
-                print('Loading admin2 codes...')
+                print('Loading admin2 codes...', file=sys.stderr)
             admin2_map = {}
             for row in csv.reader(open(GN_ADMIN2, 'rt'), delimiter='\t'):
                 admin2_map[row[ADMIN_COLUMNS['concatCodes']]] = row[ADMIN_COLUMNS['asciiName']]
 
             if self.verbose:
-                print('Creating formatted geocoded file...')
+                print('Creating formatted geocoded file...', file=sys.stderr)
             writer = csv.DictWriter(open(local_filename, 'wt'), fieldnames=RG_COLUMNS)
             rows = []
             for row in csv.reader(open(cities1000_filename, 'rt'), \
@@ -239,7 +239,7 @@ class RGeocoder(object):
             writer.writerows(rows)
 
             if self.verbose:
-                print('Removing extracted cities1000 to save space...')
+                print('Removing extracted cities1000 to save space...', file=sys.stderr)
             os.remove(cities1000_filename)
 
         # Load all the coordinates and locations
@@ -270,7 +270,7 @@ def rel_path(filename):
     """
     return os.path.join(os.getcwd(), os.path.dirname(__file__), filename)
 
-def get(geo_coord, mode=2, verbose=True):
+def get(geo_coord, mode=2, verbose=False):
     """
     Function to query for a single coordinate
     """
@@ -280,7 +280,7 @@ def get(geo_coord, mode=2, verbose=True):
     _rg = RGeocoder(mode=mode, verbose=verbose)
     return _rg.query([geo_coord])[0]
 
-def search(geo_coords, mode=2, verbose=True):
+def search(geo_coords, mode=2, verbose=False):
     """
     Function to query for a list of coordinates
     """
@@ -293,14 +293,14 @@ def search(geo_coords, mode=2, verbose=True):
     return _rg.query(geo_coords)
 
 if __name__ == '__main__':
-    print('Testing single coordinate through get...')
+    print('Testing single coordinate through get...', file=sys.stderr)
     city = (37.78674, -122.39222)
-    print('Reverse geocoding 1 city...')
+    print('Reverse geocoding 1 city...', file=sys.stderr)
     result = get(city)
-    print(result)
+    print(result, file=sys.stderr)
 
-    print('Testing coordinates...')
+    print('Testing coordinates...', file=sys.stderr)
     cities = [(51.5214588, -0.1729636), (9.936033, 76.259952), (37.38605, -122.08385)]
-    print('Reverse geocoding %d cities...' % len(cities))
+    print('Reverse geocoding %d cities...' % len(cities), file=sys.stderr)
     results = search(cities)
-    print(results)
+    print(results, file=sys.stderr)
