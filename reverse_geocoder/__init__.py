@@ -274,8 +274,8 @@ def get(geo_coord, mode=2, verbose=True):
     """
     Function to query for a single coordinate
     """
-    if not isinstance(geo_coord, tuple) or not isinstance(geo_coord[0], float):
-        raise TypeError('Expecting a tuple')
+    if not isinstance(geo_coord, tuple) or not all(isinstance(c, (float, int)) for c in geo_coord):
+        raise TypeError('Expecting a tuple of floats or ints')
 
     _rg = RGeocoder(mode=mode, verbose=verbose)
     return _rg.query([geo_coord])[0]
