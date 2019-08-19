@@ -137,6 +137,8 @@ class RGeocoderImpl(object):
             dists, indices = self.tree.query(coordinates, k=1)
         else:
             dists, indices = self.tree.pquery(coordinates, k=1)
+            # in pquery dists returns a list of arrays so get the first element instead of returning array
+            dists = [dist[0] for dist in dists]
         return [(dists[n], self.locations[index]) for (n, index) in enumerate(indices)]
 
     def load(self, stream, stream_columns):
@@ -264,7 +266,7 @@ class RGeocoderImpl(object):
         writer.writerows(rows)
 
         if self.verbose:
-            print('Removing extracted cities1000 to save space...')
+            print('Removing extracted %s to save space...' % geoname_file)
         os.remove(cities_filename)
 
         return rows
