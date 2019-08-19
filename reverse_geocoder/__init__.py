@@ -89,14 +89,14 @@ def singleton(cls):
         return instances[cls]
     return getinstance
 
-@singleton
-class RGeocoder(object):
+
+class RGeocoderImpl(object):
     """
     The main reverse geocoder class
     """
-    def __init__(self, mode=2, verbose=True, stream=None):
+    def __init__(self, mode=2, verbose=True, stream=None, stream_columns=None):
         """ Class Instantiation
-        Args:
+        Args:`
         mode (int): Library supports the following two modes:
                     - 1 = Single-threaded K-D Tree
                     - 2 = Multi-threaded K-D Tree (Default)
@@ -106,7 +106,7 @@ class RGeocoder(object):
         self.mode = mode
         self.verbose = verbose
         if stream:
-            coordinates, self.locations = self.load(stream)
+            coordinates, self.locations = self.load(stream, stream_columns)
         else:
             coordinates, self.locations = self.extract(rel_path(RG_FILE))
 
@@ -127,7 +127,21 @@ class RGeocoder(object):
             _, indices = self.tree.pquery(coordinates, k=1)
         return [self.locations[index] for index in indices]
 
-    def load(self, stream):
+    def query_dist(self, coordinates):
+        """
+        Function to query the K-D tree to find the nearest city
+        Args:
+        coordinates (list): List of tuple coordinates, i.e. [(latitude, longitude)]
+        """
+        if self.mode == 1:
+            dists, indices = self.tree.query(coordinates, k=1)
+        else:
+            dists, indices = self.tree.pquery(coordinates, k=1)
+            # in pquery dists returns a list of arrays so get the first element instead of returning array
+            dists = [dist[0] for dist in dists]
+        return [(dists[n], self.locations[index]) for (n, index) in enumerate(indices)]
+
+    def load(self, stream, stream_columns):
         """
         Function that loads a custom data source
         Args:
@@ -135,12 +149,15 @@ class RGeocoder(object):
                               The format of the stream must be a comma-separated file
                               with header containing the columns defined in RG_COLUMNS.
         """
+        if not stream_columns:
+            stream_columns = RG_COLUMNS
+
         stream_reader = csv.DictReader(stream, delimiter=',')
         header = stream_reader.fieldnames
 
-        if header != RG_COLUMNS:
+        if header != stream_columns:
             raise csv.Error('Input must be a comma-separated file with header containing ' + \
-                'the following columns - %s. For more help, visit: ' % (','.join(RG_COLUMNS)) + \
+                'the following columns - %s.\nFound header - %s.\nFor more help, visit: ' % (','.join(stream_columns), ','.join(header)) + \
                 'https://github.com/thampiman/reverse-geocoder')
 
         # Load all the coordinates and locations
@@ -163,91 +180,102 @@ class RGeocoder(object):
                 print('Loading formatted geocoded file...')
             rows = csv.DictReader(open(local_filename, 'rt'))
         else:
-            gn_cities1000_url = GN_URL + GN_CITIES1000 + '.zip'
-            gn_admin1_url = GN_URL + GN_ADMIN1
-            gn_admin2_url = GN_URL + GN_ADMIN2
-
-            cities1000_zipfilename = GN_CITIES1000 + '.zip'
-            cities1000_filename = GN_CITIES1000 + '.txt'
-
-            if not os.path.exists(cities1000_zipfilename):
-                if self.verbose:
-                    print('Downloading files from Geoname...')
-                try: # Python 3
-                    import urllib.request
-                    urllib.request.urlretrieve(gn_cities1000_url, cities1000_zipfilename)
-                    urllib.request.urlretrieve(gn_admin1_url, GN_ADMIN1)
-                    urllib.request.urlretrieve(gn_admin2_url, GN_ADMIN2)
-                except ImportError: # Python 2
-                    import urllib
-                    urllib.urlretrieve(gn_cities1000_url, cities1000_zipfilename)
-                    urllib.urlretrieve(gn_admin1_url, GN_ADMIN1)
-                    urllib.urlretrieve(gn_admin2_url, GN_ADMIN2)
-
-
-            if self.verbose:
-                print('Extracting cities1000...')
-            _z = zipfile.ZipFile(open(cities1000_zipfilename, 'rb'))
-            open(cities1000_filename, 'wb').write(_z.read(cities1000_filename))
-
-            if self.verbose:
-                print('Loading admin1 codes...')
-            admin1_map = {}
-            t_rows = csv.reader(open(GN_ADMIN1, 'rt'), delimiter='\t')
-            for row in t_rows:
-                admin1_map[row[ADMIN_COLUMNS['concatCodes']]] = row[ADMIN_COLUMNS['asciiName']]
-
-            if self.verbose:
-                print('Loading admin2 codes...')
-            admin2_map = {}
-            for row in csv.reader(open(GN_ADMIN2, 'rt'), delimiter='\t'):
-                admin2_map[row[ADMIN_COLUMNS['concatCodes']]] = row[ADMIN_COLUMNS['asciiName']]
-
-            if self.verbose:
-                print('Creating formatted geocoded file...')
-            writer = csv.DictWriter(open(local_filename, 'wt'), fieldnames=RG_COLUMNS)
-            rows = []
-            for row in csv.reader(open(cities1000_filename, 'rt'), \
-                    delimiter='\t', quoting=csv.QUOTE_NONE):
-                lat = row[GN_COLUMNS['latitude']]
-                lon = row[GN_COLUMNS['longitude']]
-                name = row[GN_COLUMNS['asciiName']]
-                cc = row[GN_COLUMNS['countryCode']]
-
-                admin1_c = row[GN_COLUMNS['admin1Code']]
-                admin2_c = row[GN_COLUMNS['admin2Code']]
-
-                cc_admin1 = cc+'.'+admin1_c
-                cc_admin2 = cc+'.'+admin1_c+'.'+admin2_c
-
-                admin1 = ''
-                admin2 = ''
-
-                if cc_admin1 in admin1_map:
-                    admin1 = admin1_map[cc_admin1]
-                if cc_admin2 in admin2_map:
-                    admin2 = admin2_map[cc_admin2]
-
-                write_row = {'lat':lat,
-                             'lon':lon,
-                             'name':name,
-                             'admin1':admin1,
-                             'admin2':admin2,
-                             'cc':cc}
-                rows.append(write_row)
-            writer.writeheader()
-            writer.writerows(rows)
-
-            if self.verbose:
-                print('Removing extracted cities1000 to save space...')
-            os.remove(cities1000_filename)
-
+            rows = self.do_extract(GN_CITIES1000, local_filename)
+        
         # Load all the coordinates and locations
         geo_coords, locations = [], []
         for row in rows:
             geo_coords.append((row['lat'], row['lon']))
             locations.append(row)
         return geo_coords, locations
+
+    def do_extract(self, geoname_file, local_filename):
+        gn_cities_url = GN_URL + geoname_file + '.zip'
+        gn_admin1_url = GN_URL + GN_ADMIN1
+        gn_admin2_url = GN_URL + GN_ADMIN2
+
+        cities_zipfilename = geoname_file + '.zip'
+        cities_filename = geoname_file + '.txt'
+
+        if not os.path.exists(cities_zipfilename):
+            if self.verbose:
+                print('Downloading files from Geoname...')
+            try: # Python 3
+                import urllib.request
+                urllib.request.urlretrieve(gn_cities_url, cities_zipfilename)
+                urllib.request.urlretrieve(gn_admin1_url, GN_ADMIN1)
+                urllib.request.urlretrieve(gn_admin2_url, GN_ADMIN2)
+            except ImportError: # Python 2
+                import urllib
+                urllib.urlretrieve(gn_cities_url, cities_zipfilename)
+                urllib.urlretrieve(gn_admin1_url, GN_ADMIN1)
+                urllib.urlretrieve(gn_admin2_url, GN_ADMIN2)
+
+
+        if self.verbose:
+            print('Extracting %s...' % geoname_file)
+        _z = zipfile.ZipFile(open(cities_zipfilename, 'rb'))
+        open(cities_filename, 'wb').write(_z.read(cities_filename))
+
+        if self.verbose:
+            print('Loading admin1 codes...')
+        admin1_map = {}
+        t_rows = csv.reader(open(GN_ADMIN1, 'rt'), delimiter='\t')
+        for row in t_rows:
+            admin1_map[row[ADMIN_COLUMNS['concatCodes']]] = row[ADMIN_COLUMNS['asciiName']]
+
+        if self.verbose:
+            print('Loading admin2 codes...')
+        admin2_map = {}
+        for row in csv.reader(open(GN_ADMIN2, 'rt'), delimiter='\t'):
+            admin2_map[row[ADMIN_COLUMNS['concatCodes']]] = row[ADMIN_COLUMNS['asciiName']]
+
+        if self.verbose:
+            print('Creating formatted geocoded file...')
+        writer = csv.DictWriter(open(local_filename, 'wt'), fieldnames=RG_COLUMNS)
+        rows = []
+        for row in csv.reader(open(cities_filename, 'rt'), \
+                delimiter='\t', quoting=csv.QUOTE_NONE):
+            lat = row[GN_COLUMNS['latitude']]
+            lon = row[GN_COLUMNS['longitude']]
+            name = row[GN_COLUMNS['asciiName']]
+            cc = row[GN_COLUMNS['countryCode']]
+
+            admin1_c = row[GN_COLUMNS['admin1Code']]
+            admin2_c = row[GN_COLUMNS['admin2Code']]
+
+            cc_admin1 = cc+'.'+admin1_c
+            cc_admin2 = cc+'.'+admin1_c+'.'+admin2_c
+
+            admin1 = ''
+            admin2 = ''
+
+            if cc_admin1 in admin1_map:
+                admin1 = admin1_map[cc_admin1]
+            if cc_admin2 in admin2_map:
+                admin2 = admin2_map[cc_admin2]
+
+            write_row = {'lat':lat,
+                            'lon':lon,
+                            'name':name,
+                            'admin1':admin1,
+                            'admin2':admin2,
+                            'cc':cc}
+            rows.append(write_row)
+        writer.writeheader()
+        writer.writerows(rows)
+
+        if self.verbose:
+            print('Removing extracted %s to save space...' % geoname_file)
+        os.remove(cities_filename)
+
+        return rows
+
+
+@singleton
+class RGeocoder(RGeocoderImpl):
+    pass
+
 
 def geodetic_in_ecef(geo_coords):
     geo_coords = np.asarray(geo_coords).astype(np.float)
@@ -291,6 +319,7 @@ def search(geo_coords, mode=2, verbose=True):
 
     _rg = RGeocoder(mode=mode, verbose=verbose)
     return _rg.query(geo_coords)
+
 
 if __name__ == '__main__':
     print('Testing single coordinate through get...')
