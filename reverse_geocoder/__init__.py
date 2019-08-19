@@ -157,7 +157,7 @@ class RGeocoderImpl(object):
 
         if header != stream_columns:
             raise csv.Error('Input must be a comma-separated file with header containing ' + \
-                'the following columns - %s. For more help, visit: ' % (','.join(RG_COLUMNS)) + \
+                'the following columns - %s.\nFound header - %s.\nFor more help, visit: ' % (','.join(stream_columns), ','.join(header)) + \
                 'https://github.com/thampiman/reverse-geocoder')
 
         # Load all the coordinates and locations
