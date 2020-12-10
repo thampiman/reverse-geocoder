@@ -110,10 +110,11 @@ class RGeocoder(object):
         else:
             coordinates, self.locations = self.extract(rel_path(RG_FILE))
 
+        ecef_coordinates = geodetic_in_ecef(coordinates)
         if mode == 1: # Single-process
-            self.tree = KDTree(coordinates)
+            self.tree = KDTree(ecef_coordinates)
         else: # Multi-process
-            self.tree = KDTree_MP.cKDTree_MP(coordinates)
+            self.tree = KDTree_MP.cKDTree_MP(ecef_coordinates)
 
     def query(self, coordinates):
         """
@@ -121,10 +122,11 @@ class RGeocoder(object):
         Args:
         coordinates (list): List of tuple coordinates, i.e. [(latitude, longitude)]
         """
+        ecef_coordinates = geodetic_in_ecef(coordinates)
         if self.mode == 1:
-            _, indices = self.tree.query(coordinates, k=1)
+            _, indices = self.tree.query(ecef_coordinates, k=1)
         else:
-            _, indices = self.tree.pquery(coordinates, k=1)
+            _, indices = self.tree.pquery(ecef_coordinates, k=1)
         return [self.locations[index] for index in indices]
 
     def load(self, stream):
@@ -260,7 +262,7 @@ def geodetic_in_ecef(geo_coords):
 
     x = normal * np.cos(lat_r) * np.cos(lon_r)
     y = normal * np.cos(lat_r) * np.sin(lon_r)
-    z = normal * (1 - E2) * np.sin(lat)
+    z = normal * (1 - E2) * np.sin(lat_r)
 
     return np.column_stack([x, y, z])
 
