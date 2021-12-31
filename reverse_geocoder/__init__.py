@@ -159,8 +159,6 @@ class RGeocoder(object):
         local_filename (str): Path to local RG_FILE
         """
         if os.path.exists(local_filename):
-            if self.verbose:
-                print('Loading formatted geocoded file...')
             rows = csv.DictReader(open(local_filename, 'rt'))
         else:
             gn_cities1000_url = GN_URL + GN_CITIES1000 + '.zip'
@@ -171,8 +169,6 @@ class RGeocoder(object):
             cities1000_filename = GN_CITIES1000 + '.txt'
 
             if not os.path.exists(cities1000_zipfilename):
-                if self.verbose:
-                    print('Downloading files from Geoname...')
                 try: # Python 3
                     import urllib.request
                     urllib.request.urlretrieve(gn_cities1000_url, cities1000_zipfilename)
@@ -184,27 +180,18 @@ class RGeocoder(object):
                     urllib.urlretrieve(gn_admin1_url, GN_ADMIN1)
                     urllib.urlretrieve(gn_admin2_url, GN_ADMIN2)
 
-
-            if self.verbose:
-                print('Extracting cities1000...')
             _z = zipfile.ZipFile(open(cities1000_zipfilename, 'rb'))
             open(cities1000_filename, 'wb').write(_z.read(cities1000_filename))
 
-            if self.verbose:
-                print('Loading admin1 codes...')
             admin1_map = {}
             t_rows = csv.reader(open(GN_ADMIN1, 'rt'), delimiter='\t')
             for row in t_rows:
                 admin1_map[row[ADMIN_COLUMNS['concatCodes']]] = row[ADMIN_COLUMNS['asciiName']]
 
-            if self.verbose:
-                print('Loading admin2 codes...')
             admin2_map = {}
             for row in csv.reader(open(GN_ADMIN2, 'rt'), delimiter='\t'):
                 admin2_map[row[ADMIN_COLUMNS['concatCodes']]] = row[ADMIN_COLUMNS['asciiName']]
 
-            if self.verbose:
-                print('Creating formatted geocoded file...')
             writer = csv.DictWriter(open(local_filename, 'wt'), fieldnames=RG_COLUMNS)
             rows = []
             for row in csv.reader(open(cities1000_filename, 'rt'), \
