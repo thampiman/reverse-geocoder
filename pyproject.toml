@@ -1,0 +1,23 @@
+[project]
+name = "reverse_geocoder_whl"
+version = "1.5.1"
+authors = [
+    {"name" = "Ajay Thampi", "email" = "ajay.thampi@gmail.com"},
+]
+classifiers = [
+]
+dependencies = ["numpy>=1.11.0", "scipy>=0.17.1"]
+description = "Fast, offline reverse geocoder"
+#license = "LGPL"
+readme = {file = "README.txt", content-type = "text/markdown"}
+requires-python = ">=3.8"
+
+[build-system]
+requires = [
+    "setuptools >= 67.6.0",
+    "wheel >= 0.40.0",
+]
+build-backend = "setuptools.build_meta"
+
+[[tool.cibuildwheel.overrides]]
+select = "cp3{8,9,10}-*"
