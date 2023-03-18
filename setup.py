@@ -16,14 +16,14 @@ class build_ext(_build_ext):
       import numpy
       self.include_dirs.append(numpy.get_include())
 
-setup(name='reverse_geocoder',
+setup(name='reverse_geocoder_whl',
       version='1.5.1',
       author='Ajay Thampi',
       author_email='ajay.thampi@gmail.com',
-      url='https://github.com/thampiman/reverse-geocoder',
-      packages=['reverse_geocoder'],
-      package_dir={'reverse_geocoder': './reverse_geocoder'},
-      package_data={'reverse_geocoder': ['rg_cities1000.csv']},
+      url='https://github.com/TalAmuyal/reverse-geocoder-whl',
+      packages=['reverse_geocoder_whl'],
+      package_dir={'reverse_geocoder_whl': './reverse_geocoder_whl'},
+      package_data={'reverse_geocoder_whl': ['rg_cities1000.csv']},
       setup_requires=['numpy>=1.11.0',],
       cmdclass={'build_ext': build_ext},
       install_requires=['numpy>=1.11.0', 'scipy>=0.17.1',],

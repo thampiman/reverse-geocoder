@@ -7,7 +7,7 @@ ReverseGeocode::ReverseGeocode()
   pFunc = NULL;
   PyObject *pName, *pModule;
   Py_Initialize();
-  pName = PyString_FromString("reverse_geocoder");
+  pName = PyUnicode_FromString("reverse_geocoder_whl");
   /* Error checking of pName left out */
   pModule = PyImport_Import(pName);
   Py_DECREF(pName);
@@ -69,8 +69,8 @@ std::vector<std::map<std::string, std::string>> ReverseGeocode::search(double _l
       Py_ssize_t pos = 0;
 
       while (PyDict_Next(pDict, &pos, &key, &value)) {
-          const char* s = PyString_AsString(key);
-          const char* s1 = PyString_AsString(value);
+          const char* s = PyUnicode_AsUTF8(key);
+          const char* s1 = PyUnicode_AsUTF8(value);
           result[s] = s1;
       }
       results.push_back(result);
