@@ -1,21 +1,21 @@
 [project]
 name = "reverse_geocoder_whl"
+version = "1.5.1"
+authors = ["Ajay Thampi"]
+classifiers = [
+]
+dependencies = ["numpy>=1.11.0", "scipy>=0.17.1"]
+description = "Fast, offline reverse geocoder"
+license = "LGPL"
+readme = {file = "README.txt", content-type = "text/markdown"}
 requires-python = ">=3.8"
 
 [build-system]
 requires = [
-    "setuptools >= 59.6.0",
-    "numpy >= 1.11.0",
-    "wheel >= 0.37.1",
+    "setuptools >= 67.6.0",
+    "wheel >= 0.40.0",
 ]
 build-backend = "setuptools.build_meta"
 
-[tool.cibuildwheel]
-before-all = [
-    "cmake c++ -DPYTHON_INCLUDE_DIRS=$(python3 -c \"import sysconfig; print(sysconfig.get_path('include'))\") -DPYTHON_LIBRARIES=$(python3 -c \"import sysconfig; print(sysconfig.get_config_var('LIBDIR'))\")",
-    "make",
-]
-
 [[tool.cibuildwheel.overrides]]
-#select = "cp3{8,9,10}-*"
-select = "cp38-*"
+select = "cp3{8,9,10}-*"
