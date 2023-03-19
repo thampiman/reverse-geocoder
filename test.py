@@ -1,9 +1,9 @@
 from timeit import timeit
 import csv
-import reverse_geocoder as rg
+import reverse_geocoder_whl as rg
 
 if __name__ == '__main__':
-    setup = "import csv;import reverse_geocoder as rg;print('Loading coordinates...');" + \
+    setup = "import csv;import reverse_geocoder_whl as rg;print('Loading coordinates...');" + \
             "cities = [(row[0],row[1]) for row in csv.reader(open('../test/coordinates_10000000.csv','rt'),delimiter='\t')];"
     num = 3
     t = timeit(stmt="rg.search(cities,mode=1)",setup=setup,number=num)

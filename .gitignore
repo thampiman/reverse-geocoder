@@ -25,3 +25,6 @@ CMakeCache.txt
 main
 Makefile
 libreverse_geocode.a
+
+dist
+wheelhouse

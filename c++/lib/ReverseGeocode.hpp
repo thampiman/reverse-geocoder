@@ -11,6 +11,6 @@ private:
   PyObject *pFunc;
 public:
   ReverseGeocode();
-  std::vector<std::map<std::string, std::string>> search(double _lat, double _lon);
+  std::vector<std::map<std::string, std::string> > search(double _lat, double _lon);
 };
 #endif
